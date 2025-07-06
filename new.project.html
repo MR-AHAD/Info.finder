@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Number+Nid Number Info finder</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body {
+    font-family: 'Noto Sans Bengali', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a2540, #083a59);
+    color: #e0f7fa;
+    display: flex; flex-direction: column; align-items: center; padding: 30px 15px;
+    user-select: none;
+  }
+  h1 {
+    font-size: 2.8rem;
+    margin-bottom: 30px;
+    background: linear-gradient(90deg, #56ccf2, #2f80ed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    user-select: text;
+    text-align: center;
+  }
+  .tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    border-radius: 40px;
+    background: rgba(255 255 255 / 0.12);
+    box-shadow: 0 0 50px #00fff7bb;
+    overflow: hidden;
+    user-select: none;
+    width: 320px;
+  }
+  .tab {
+    flex: 1;
+    padding: 16px 0;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.35s ease, color 0.35s ease;
+    color: #90d7ffcc;
+    user-select: none;
+  }
+  .tab.active {
+    background: linear-gradient(90deg, #00ffe7, #00b6a9);
+    color: #00322a;
+    box-shadow: inset 0 0 12px #00fff7bb;
+  }
+  .tab:not(.active):hover {
+    color: #00fff7dd;
+  }
+  .container {
+    background: rgba(255 255 255 / 0.12);
+    backdrop-filter: blur(18px);
+    border-radius: 35px;
+    padding: 40px 30px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 0 50px #00fff7bb;
+    position: relative;
+    z-index: 10;
+  }
+    input[type="text"] {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.2rem;
+      border: none;
+      border-bottom: 3px solid #00ffe7;
+      background: transparent;
+      color: #00ffe7;
+      letter-spacing: 0.15em;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.3s ease;
+      margin-bottom: 25px;
+      font-weight: 600;
+      border-radius: 8px 8px 0 0;
+    }
+
+    input[type="text"]:focus {
+      border-color: #00ffa7;
+      box-shadow: 0 0 15px #00ffa7aa;
+      background: rgba(0, 255, 167, 0.05);
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #00ffe7;
+      border: none;
+      font-weight: 700;
+      color: #000;
+      border-radius: 80px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #00c2af;
+      color: #fff;
+    }
+    .warning {
+      color: #ff6b6b;
+      font-size: 14px;
+      margin-bottom: 15px;
+      min-height: 20px;
+      text-align: center;
+    }
+    #output {
+      margin-top: 20px;
+      background: rgba(0,255,231,0.1);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,255,231,0.4);
+    }
+    #output img {
+      display: block;
+      margin: 0 auto 20px;
+      width: 100px;
+      border-radius: 50%;
+    }
+    .detail {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .address-list p {
+      margin: 4px 0;
+    }
+    /* Menu styles */
+    .menu-container {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 999;
+    }
+    #menuBtn {
+      background: #00ffe7;
+      border: none;
+      padding: 10px;
+      font-size: 22px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      color: #000;
+    }
+    #menuBtn:hover {
+      background: #00c2af;
+      color: #fff;
+    }
+    .menu-list {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 45px;
+      background: #203a43;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,255,231,0.5);
+    }
+    .menu-list.show {
+      display: block;
+    }
+    .menu-list li {
+      list-style: none;
+    }
+    .menu-list a {
+      display: block;
+      padding: 12px 20px;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .menu-list a:hover {
+      background: #00ffe7;
+      color: #000;
+    }
+
+    /* Login box */
+    #loginBox {
+      max-width: 400px;
+      margin: 80px auto;
+      background: #2c5364;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,255,231,0.5);
+      text-align: center;
+    }
+    #loginBox input[type="text"] {
+      margin-bottom: 15px;
+    }
+    #loginMessage {
+      margin-top: 15px;
+      font-size: 15px;
+      color: #ff6b6b;
+      min-height: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Login Section -->
+<div id="loginBox">
+  <h2>Enter Your Access Key</h2>
+  <input id="accessKey" type="text" placeholder="KEY-XXXXXX" maxlength="13" autocomplete="off" aria-label="Access Key" />
+  <button id="loginBtn">𝐀𝐜𝐜𝐞𝐬𝐬</button>
+  <div id="loginMessage" role="alert" aria-live="assertive"></div>
+</div>
+
+<!-- Main Content (hidden initially) -->
+<div id="mainContent" style="display:none;">
+  <h1>𝐏𝐡𝐨𝐧𝐞 𝐍𝐮𝐦𝐛𝐞𝐫 + 𝐍𝐈𝐃 𝐍𝐮𝐦𝐛𝐞𝐫 𝐈𝐧𝐟𝐨 𝐅𝐢𝐧𝐝𝐞𝐫</h1>
+
+  <div class="tabs" role="tablist" aria-label="Select info type">
+    <button class="tab active" data-tab="phone" role="tab" aria-selected="true" aria-controls="phoneTab" id="tabPhone">𝑷𝒉𝒐𝒏𝒆 𝑵𝒖𝒎𝒃𝒆𝒓</button>
+    <button class="tab" data-tab="nid" role="tab" aria-selected="false" aria-controls="nidTab" id="tabNID">𝑵𝒊𝒅 𝑵𝒖𝒎𝒃𝒆𝒓</button>
+  </div>
+
+  <div class="container">
+
+    <div id="phoneTab" role="tabpanel" aria-labelledby="tabPhone">
+      <input id="phoneInput" type="text" inputmode="numeric" maxlength="11" placeholder="𝑬𝒏𝒕𝒆𝒓 𝑷𝒉𝒐𝒏𝒆 𝑵𝒖𝒎𝒃𝒆𝒓
+" aria-describedby="phoneMsg" autocomplete="off" />
+      <button id="phoneBtn" type="button">𝑺𝒆𝒂𝒓𝒄𝒉</button>
+      <p id="phoneMsg" class="warning" role="alert" aria-atomic="true"></p>
+    </div>
+
+    <div id="nidTab" role="tabpanel" aria-labelledby="tabNID" style="display:none;">
+      <input id="nidInput" type="text" inputmode="numeric" minlength="10" maxlength="17" placeholder="𝑪𝒉𝒐𝒊𝒄𝒆 10-17 𝑫𝒊𝒈𝒊𝒕 𝑵𝒊𝒅 𝑵𝒖𝒎𝒃𝒆𝒓" aria-describedby="nidMsg" autocomplete="off" />
+      <button id="nidBtn" type="button">𝑺𝒆𝒂𝒓𝒄𝒉</button>
+      <p id="nidMsg" class="warning" role="alert" aria-atomic="true"></p>
+    </div>
+
+    <div id="output" aria-live="polite" aria-atomic="true" style="display:none;"></div>
+
+  </div>
+
+  <div class="menu-container">
+  <button id="menuBtn" aria-label="Menu button" title="Menu">☰</button>
+  <ul id="menuList" class="menu-list" role="menu" aria-hidden="true">
+    <li role="none"><a href="https://wa.me/01839820328" target="_blank" rel="noopener noreferrer" role="menuitem" tabindex="-1">📞 WhatsApp</a></li>
+    <li role="none"><a href="https://facebook.com/404.BLACK.ARMY" target="_blank" rel="noopener noreferrer" role="menuitem" tabindex="-1">📘 Facebook </a></li>
+    <li role="none"><a href="https://www.youtube.com/@TheHawk-h9z target="_blank" rel="noopener noreferrer" role="menuitem" tabindex="-1">📸 YouTube</a></li>
+    <li role="none"><a href="আপনার_ওয়েবসাইট_বা_ব্লগ_লিঙ্ক" target="_blank" rel="noopener noreferrer" role="menuitem" tabindex="-1">🌐 website</a></li>
+    <li role="none"><a href="#about" role="menuitem" tabindex="-1">ℹ️ আমাদের সম্পর্কে</a></li>
+    <li role="none"><a href="#services" role="menuitem" tabindex="-1">🛠️ আমাদের সেবা</a></li>
+  </ul>
+</div>
+
+<script>
+  // Valid login keys (Access Key List)
+  const validKeys = ["KEY-AB82CD34", "KEY-EF58GH78", "KEY-IJ90KL12"];
+
+  // Telegram Bot Details
+  const telegramBotToken = "8189756557:AAEJGOsoiLg7VIEZazjmFBXVdzdhziqflN0";
+  const telegramChatId = "6057048558";
+
+  // Elements
+  const loginBox = document.getElementById('loginBox');
+  const mainContent = document.getElementById('mainContent');
+  const loginBtn = document.getElementById('loginBtn');
+  const accessKey = document.getElementById('accessKey');
+  const loginMessage = document.getElementById('loginMessage');
+
+  loginBtn.addEventListener('click', () => {
+    const key = accessKey.value.trim().toUpperCase();
+    if (!key) {
+      loginMessage.textContent = 'Enter Valid KEY ।';
+      return;
+    }
+    if (!validKeys.includes(key)) {
+      loginMessage.textContent = 'Wrong KEY. Plesse Try Again।';
+      return;
+    }
+    // Successful login
+    loginMessage.textContent = '';
+    loginBox.style.display = 'none';
+    mainContent.style.display = 'block';
+
+    // Send login notification to Telegram Bot
+    sendTelegramMessage(`🔐 *New Login*\nKey: \`${key}\`\nDevice📱: ${navigator.userAgent}\nTime: ${new Date().toLocaleString('bn-BD')}`);
+  });
+
+  // Telegram send message function (using fetch)
+  function sendTelegramMessage(message) {
+    const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        chat_id: telegramChatId,
+        text: message,
+        parse_mode: "HTML"
+      })
+    }).catch(err => {
+      console.error("Telegram message failed:", err);
+    });
+  }
+
+  // Tabs
+  const tabs = document.querySelectorAll('.tab');
+  const phoneTab = document.getElementById('phoneTab');
+  const nidTab = document.getElementById('nidTab');
+  const output = document.getElementById('output');
+  const phoneMsg = document.getElementById('phoneMsg');
+  const nidMsg = document.getElementById('nidMsg');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+
+      if (tab.dataset.tab === 'phone') {
+        phoneTab.style.display = 'block';
+        nidTab.style.display = 'none';
+        output.style.display = 'none';
+        clearMessages();
+      } else {
+        phoneTab.style.display = 'none';
+        nidTab.style.display = 'block';
+        output.style.display = 'none';
+        clearMessages();
+      }
+    });
+  });
+
+  function clearMessages() {
+    phoneMsg.textContent = '';
+    nidMsg.textContent = '';
+  }
+
+  // Hash function for deterministic fake data
+  function hashCode(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash);
+  }
+
+  // Phone data generator
+  function generatePhoneData(phone) {
+    const operators = {
+      '017': 'Grameenphone',
+      '018': 'Robi',
+      '019': 'Banglalink',
+      '016': 'Airtel',
+      '015': 'Teletalk',
+      '013': 'Citycell (Inactive)'
+    };
+    const opCode = phone.substring(0, 3);
+    const operatorName = operators[opCode] || 'Unknown Operator';
+
+    const seed = hashCode(phone);
+
+    const names = ['Mahmudul Hasan', 'Sumaiya Akter', 'Rahim Uddin', 'Sanjida Parvin', 'Zahidul Islam', 'Nusrat Jahan'];
+    const fathers = ['Ali Hossain', 'Md. Shahidul Islam', 'Selim Mia', 'Abdul Karim', 'Md. Rabbani', 'Mostafizur Rahman'];
+    const mothers = ['Fatema Begum', 'Asma Khatun', 'Sabrina Akter', 'Mamtaz Begum', 'Ruksana Khatun', 'Sumaiya Parvin'];
+    const villages = ['Kazipara', 'Bortola', 'Shibpur', 'Pahartoli', 'Sundarban', 'Daulatpur'];
+    const upazilas = ['Feni Sadar', 'Lalmohan', 'Sadar Upazila', 'Ashulia', 'Rajarhat', 'Meherpur'];
+    const districts = ['Feni', 'Barisal', 'Khulna', 'Chattogram', 'Dhaka', 'Rajshahi'];
+
+    function pick(seedVal, arr) {
+      return arr[(seedVal + arr.length) % arr.length];
+    }
+
+    return {
+      phone_number: phone,
+      operator: operatorName,
+      name: pick(seed, names),
+      father_name: pick(seed + 3, fathers),
+      mother_name: pick(seed + 5, mothers),
+      address: `${pick(seed + 7, villages)}, ${pick(seed + 9, upazilas)}, ${pick(seed + 11, districts)}`,
+      status: ' info Finder based on phone number'
+    };
+  }
+
+  // NID data generator
+  function generateNIDData(nid) {
+    const seed = hashCode(nid);
+
+    const names = ['Md. Shafiq Islam', 'Rupa Khanom', 'Abdullah Al Momin', 'Nur Alam', 'Jannat Begum', 'Salma Akter'];
+    const fathers = ['Md. Azizur Rahman', 'Md. Nurul Islam', 'Abdul Majid', 'Syed Mushfiq', 'Md. Arif', 'Abdul Hannan'];
+    const mothers = ['Fatema Khatun', 'Mosha: Sumaiya', 'Rashida Begum', 'Shahnaz Begum', 'Mamtaz Begum', 'Sabrina Akter'];
+    const villages = ['Kaliganj', 'Bordop', 'Rauzan', 'Mohammadpur', 'Jhalakathi', 'Gopalganj'];
+    const upazilas = ['Maheshkhali', 'Srimangal', 'Atpara', 'Mirpur', 'Kaptai', 'Phulbari'];
+    const districts = ['Rangamati', 'Coxs Bazar', 'Sunamganj', 'Narsingdi', 'Bogra', 'Tangail'];
+
+    const dobYear = 1965 + (seed % 35);
+    const dobMonth = ((seed + 5) % 12) + 1;
+    const dobDay = ((seed + 7) % 28) + 1;
+
+    function pick(seedVal, arr) {
+      return arr[(seedVal + arr.length) % arr.length];
+    }
+
+    return {
+      nid_number: nid,
+      name: pick(seed, names),
+      father_name: pick(seed + 3, fathers),
+      mother_name: pick(seed + 5, mothers),
+      dob: `${dobDay.toString().padStart(2, '0')}-${dobMonth.toString().padStart(2, '0')}-${dobYear}`,
+      address: {
+        village: pick(seed + 7, villages),
+        upazila: pick(seed + 9, upazilas),
+        district: pick(seed + 11, districts)
+      },
+      status: ' info Finder based on NID number'
+    };
+  }
+
+  // Display data nicely
+  function displayData(data, type) {
+    output.style.display = 'block';
+    let html = '';
+
+    if (type === 'phone') {
+      html += `<img src="https://avatars.dicebear.com/api/initials/${encodeURIComponent(data.name)}.svg?background=%2300b6a9&color=%23fff" alt="Profile Image" />`;
+      html += `<div class="detail">📞 Phone Number: <strong>${data.phone_number}</strong></div>`;
+      html += `<div class="detail">📡 Operator: <strong>${data.operator}</strong></div>`;
+      html += `<div class="detail">👤 Name: <strong>${data.name}</strong></div>`;
+      html += `<div class="detail">👨‍👦 Father Name: <strong>${data.father_name}</strong></div>`;
+      html += `<div class="detail">👩‍👦 Mother Name: <strong>${data.mother_name}</strong></div>`;
+      html += `<div class="detail">🏠 address: <strong>${data.address}</strong></div>`;
+      html += `<div class="detail"><em>${data.status}</em></div>`;
+    } else if (type === 'nid') {
+      html += `<img src="https://avatars.dicebear.com/api/initials/${encodeURIComponent(data.name)}.svg?background=%2300b6a9&color=%23fff" alt="Profile Image" />`;
+      html += `<div class="detail">🆔 Nid No: <strong>${data.nid_number}</strong></div>`;
+      html += `<div class="detail">👤 Name: <strong>${data.name}</strong></div>`;
+      html += `<div class="detail">👨‍👦 Father Name: <strong>${data.father_name}</strong></div>`;
+      html += `<div class="detail">👩‍👦 Mother Name: <strong>${data.mother_name}</strong></div>`;
+      html += `<div class="detail">🎂 date of birth: <strong>${data.dob}</strong></div>`;
+      html += `<div class="detail">🏠 address: <strong>${data.address.village}, ${data.address.upazila}, ${data.address.district}</strong></div>`;
+      html += `<div class="detail"><em>${data.status}</em></div>`;
+    }
+    output.innerHTML = html;
+  }
+
+  // Validate phone number (11 digits, valid prefixes)
+  function validatePhone(phone) {
+    const regex = /^(013|014|015|016|017|018|019)\d{8}$/;
+    return regex.test(phone);
+  }
+
+  // Validate NID number (10 to 17 digits)
+  function validateNID(nid) {
+    const regex = /^\d{10,17}$/;
+    return regex.test(nid);
+  }
+
+  // Phone and NID buttons
+  const phoneBtn = document.getElementById('phoneBtn');
+  const nidBtn = document.getElementById('nidBtn');
+
+  phoneBtn.addEventListener('click', () => {
+    clearMessages();
+    const phone = document.getElementById('phoneInput').value.trim();
+    if (!validatePhone(phone)) {
+      phoneMsg.textContent = 'Enter a valid 11-digit phone number, such as 017XXXXXXXXX';
+      output.style.display = 'none';
+      return;
+    }
+    phoneMsg.textContent = '';
+    phoneBtn.disabled = true;
+    setTimeout(() => {
+      const data = generatePhoneData(phone);
+      displayData(data, 'phone');
+      phoneBtn.disabled = false;
+    }, 1000);
+  });
+
+  nidBtn.addEventListener('click', () => {
+    clearMessages();
+    const nid = document.getElementById('nidInput').value.trim();
+    if (!validateNID(nid)) {
+      nidMsg.textContent = 'Enter The Correct 10-17 Digit NID Number.।';
+      output.style.display = 'none';
+      return;
+    }
+    nidMsg.textContent = '';
+    nidBtn.disabled = true;
+    setTimeout(() => {
+      const data = generateNIDData(nid);
+      displayData(data, 'nid');
+      nidBtn.disabled = false;
+    }, 1000);
+  });
+
+  function clearMessages() {
+    phoneMsg.textContent = '';
+    nidMsg.textContent = '';
+  }
+
+  // Menu toggle
+  const menuBtn = document.getElementById('menuBtn');
+  const menuList = document.getElementById('menuList');
+  menuBtn.addEventListener('click', () => {
+    if(menuList.classList.contains('show')) {
+      menuList.classList.remove('show');
+      menuList.setAttribute('aria-hidden', 'true');
+      menuList.querySelectorAll('a').forEach(a => a.tabIndex = -1);
+    } else {
+      menuList.classList.add('show');
+      menuList.setAttribute('aria-hidden', 'false');
+      menuList.querySelectorAll('a').forEach(a => a.tabIndex = 0);
+    }
+  });
+  menuList.querySelectorAll('a').forEach(a => a.tabIndex = -1);
+
+</script>
+</body>
+</html>
